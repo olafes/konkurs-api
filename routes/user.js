@@ -6,6 +6,11 @@ const controller = require('../controllers/user.js');
 const User = require('../models/User.js');
 
 module.exports = passport => {
+  const logged = (req, res, next) => {
+    if (!req.user)
+      return res.status(401).json({ message: messages.user.youAreNotLoggedIn });
+    next();
+  }
   const notLogged = (req, res, next) => {
     if (req.user)
       return res.status(400).json({ message: messages.user.youAreAlreadyLogged });
@@ -40,5 +45,8 @@ module.exports = passport => {
     .withMessage(messages.user.nicknameFormat)
   ], controller.register);
   router.post('/logout', controller.logout);
+  // router.post('/oauth/google', passport.authenticate('google'), controller.oauth.google);
+  router.post('/oauth/google', notLogged, controller.oauth.google);
+  router.get('/profile', logged, controller.profile);
   return router;
 }

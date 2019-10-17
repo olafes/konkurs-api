@@ -1,6 +1,8 @@
 'use strict';
 const bcrypt = require('bcrypt');
+const config = require(`../config/config-${process.env.NODE_ENV}.js`);
 const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const messages = require('../config/messages.js');
 const User = require('../models/User.js');
 
@@ -10,7 +12,7 @@ module.exports = passport => {
   });
   passport.deserializeUser(async (id, done) => {
     try {
-      const user = User.findById(id);
+      const user = await User.findById(id);
       done(null, user);
     } catch (err) {
       done(err);
@@ -22,13 +24,12 @@ module.exports = passport => {
   }, async (email, password, done) => {
     try {
       const user = await User.findOne({ email });
-      if (!user)
+      if (!user || !user.authentication.local.enabled)
         return done(null, false, { message: messages.user.emailOrPasswordInvalid });
-      const match = await bcrypt.compare(password, user.password);
+      const match = await bcrypt.compare(password, user.authentication.local.password);
       if (match)
         return done(null, user);
       return done(null, false, { message: messages.user.emailOrPasswordInvalid });
-      return done(null, user);
     } catch (err) {
       return done(err);
     }

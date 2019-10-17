@@ -12,6 +12,7 @@ module.exports = {
     loginSuccessful: 'Pomyślnie zalogowano',
     loginFailed: 'Logowanie nie powiodło się',
     registerSuccessful: 'Pomyślnie zarejestrowano',
-    logoutSuccessful: 'Pomyślnie wylogowano'
+    logoutSuccessful: 'Pomyślnie wylogowano',
+    youAreNotLoggedIn: 'Nie jesteś zalogowany'
   }
 };
