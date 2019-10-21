@@ -26,8 +26,14 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
 require('./passport/index.js')(passport);
 
+app.get('/xd', (req, res) => {
+  console.log('called with cookies', req.headers.cookie);
+  res.cookie('connect.sid', "twoj stary");
+  res.status(200).send("Hello there");
+});
 app.use('/user', require('./routes/user.js')(passport));
 
 module.exports = app.listen(config.port, () => console.log(`Server started on port ${config.port}...`));

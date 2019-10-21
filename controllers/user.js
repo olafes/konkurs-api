@@ -9,27 +9,54 @@ const googleClient = new OAuth2Client(config.google.clientID)
 const User = require('../models/User.js');
 module.exports = {
   login: async (req, res, next) => {
-    res.status(200).json({ message: messages.user.loginSuccessful });
+    res.status(200).json({ success: true, message: messages.user.loginSuccessful });
   },
   register: async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
-      return res.status(422).json({ message: messages.user.loginFailed, errors: errors.array() });
+    if (!errors.isEmpty()) {
+      const errs = [];
+      const nicknameError = false;
+      const emailError = false;
+      const passwordError = false;
+      for (const err of errors.Array()) {
+        if (err.param === 'nickname' && !nicknameError) {
+            nicknameError = true;
+            err.push({
+              param: 'nickname',
+              value: err.value,
+              message: err.msg
+            });
+          } else if (err.param === 'email' && !emailError) {
+            emailError = true;
+            err.push({
+              param: 'email',
+              value: err.value,
+              message: err.msg
+            });
+          } else if (err.param === 'password' && !passwordError) {
+            passwordError = true;
+            errs.push({
+              param: 'password',
+              value: err.value,
+              message: err.msg
+            });
+          }
+      }
+      return res.status(200).json({ success: false, message: messages.user.loginFailed, errors: errs });
+    }
     const { email, password, nickname } = req.body;
     try {
       if ((await User.findOne({ email })))
-        return res.status(422).json({ message: messages.user.loginFailed, errors: [{
-          "msg": messages.user.emailAlreadyInUse,
+        return res.status(200).json({ success: false, message: messages.user.loginFailed, errors: [{
+          "message": messages.user.emailAlreadyInUse,
           "param": "email",
-          "value": email,
-          "location": "body"
+          "value": email
         }]});
       if ((await User.findOne({ nickname })))
-        return res.status(422).json({ message: messages.user.loginFailed, errors: [{
-          "msg": messages.user.nicknameAlreadyInUse,
+        return res.status(200).json({ success: false, message: messages.user.loginFailed, errors: [{
+          "message": messages.user.nicknameAlreadyInUse,
           "param": "nickname",
-          "value": nickname,
-          "location": "body"
+          "value": nickname
         }]});
       const hash = await bcrypt.hash(password, config.saltRounds);
       const user = new User({
@@ -46,24 +73,21 @@ module.exports = {
       req.login(user, err => {
         if (err) {
           console.log(err);
-          return res.status(500).json({});
+          return res.status(500).json({ success: false });
         }
-        res.status(200).json({ message: messages.user.registerSuccessful })
+        res.status(200).json({ success: true, message: messages.user.registerSuccessful })
       });
     } catch (err) {
       console.log(err);
-      return res.status(500).json({});
+      return res.status(500).json({ success: false });
     }
   },
   logout: async (req, res, next) => {
     req.logout();
-    res.status(200).json({ message: messages.user.logoutSuccessful });
+    res.status(200).json({ success: true, message: messages.user.logoutSuccessful });
   },
   oauth: {
     google: async (req, res, next) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty())
-        return res.status(422).json({ message: messages.user.loginFailed, errors: errors.array() });
       const token = req.body.idToken;
       try {
         const ticket = await googleClient.verifyIdToken({
@@ -90,14 +114,14 @@ module.exports = {
         req.login(user, err => {
           if (err) {
             console.log(err);
-            return res.status(500).json({});
+            return res.status(500).json({ success: false });
           }
           console.log(user);
-          res.status(200).json({ message: messages.user.registerSuccessful })
+          res.status(200).json({ success: true, message: messages.user.registerSuccessful })
         });
       } catch (e) {
         console.log(e);
-        res.status(500).json({});
+        res.status(500).json({ success: false });
       }
     }
   },
@@ -105,6 +129,7 @@ module.exports = {
     console.log('profile called', req.user);
     const user = req.user;
     res.status(200).json({
+      success: true,
       email: user.email,
       nickname: user.nickname
     });

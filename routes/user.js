@@ -8,27 +8,30 @@ const User = require('../models/User.js');
 module.exports = passport => {
   const logged = (req, res, next) => {
     if (!req.user)
-      return res.status(401).json({ message: messages.user.youAreNotLoggedIn });
+      return res.status(200).json({ success: false, message: messages.user.youAreNotLoggedIn });
     next();
   }
   const notLogged = (req, res, next) => {
     if (req.user)
-      return res.status(400).json({ message: messages.user.youAreAlreadyLogged });
+      return res.status(200).json({ success: false, message: messages.user.youAreAlreadyLogged });
     next();
   }
 
-  router.post('/login', notLogged, (req, res, next) => {
+  router.post('/login', (req, res, next) => {
+    console.log('called with cookies', req.headers.cookie);
+    next();
+  }, (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({});
+        return res.status(500).json({ success: false });
       }
       if (!user)
-        return res.status(401).send({ message: info.message });
+        return res.status(200).send({ success: false, message: info.message });
       req.login(user, err => {
         if (err) {
           console.log(err);
-          return res.status(500).json({});
+          return res.status(500).json({ success: false });
         }
         next();
       });

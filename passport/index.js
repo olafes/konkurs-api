@@ -24,12 +24,16 @@ module.exports = passport => {
   }, async (email, password, done) => {
     try {
       const user = await User.findOne({ email });
-      if (!user || !user.authentication.local.enabled)
-        return done(null, false, { message: messages.user.emailOrPasswordInvalid });
+      console.log('??', { email });
+      console.log('??', user);
+      if (!user || !user.authentication.local.enabled) {
+        console.log('huj');
+        return done(null, false, { success: false, message: messages.user.emailOrPasswordInvalid });
+      }
       const match = await bcrypt.compare(password, user.authentication.local.password);
       if (match)
         return done(null, user);
-      return done(null, false, { message: messages.user.emailOrPasswordInvalid });
+      return done(null, false, { success: false, message: messages.user.emailOrPasswordInvalid });
     } catch (err) {
       return done(err);
     }
