@@ -18,16 +18,13 @@ module.exports = passport => {
   }
 
   router.post('/login', (req, res, next) => {
-    console.log('called with cookies', req.headers.cookie);
-    next();
-  }, (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ success: false });
       }
       if (!user)
-        return res.status(200).send({ success: false, message: info.message });
+        return res.status(200).send({ success: false, message: messages.user.emailOrPasswordInvalid });
       req.login(user, err => {
         if (err) {
           console.log(err);
@@ -48,7 +45,6 @@ module.exports = passport => {
     .withMessage(messages.user.nicknameFormat)
   ], controller.register);
   router.post('/logout', controller.logout);
-  // router.post('/oauth/google', passport.authenticate('google'), controller.oauth.google);
   router.post('/oauth/google', notLogged, controller.oauth.google);
   router.get('/profile', logged, controller.profile);
   return router;

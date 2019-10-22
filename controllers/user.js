@@ -12,23 +12,24 @@ module.exports = {
     res.status(200).json({ success: true, message: messages.user.loginSuccessful });
   },
   register: async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    const errors = validationResult(req).errors;
+    console.log(errors);
+    if (errors.length) {
       const errs = [];
-      const nicknameError = false;
-      const emailError = false;
-      const passwordError = false;
-      for (const err of errors.Array()) {
+      let nicknameError = false;
+      let emailError = false;
+      let passwordError = false;
+      for (const err of errors) {
         if (err.param === 'nickname' && !nicknameError) {
             nicknameError = true;
-            err.push({
+            errs.push({
               param: 'nickname',
               value: err.value,
               message: err.msg
             });
           } else if (err.param === 'email' && !emailError) {
             emailError = true;
-            err.push({
+            errs.push({
               param: 'email',
               value: err.value,
               message: err.msg
@@ -42,18 +43,18 @@ module.exports = {
             });
           }
       }
-      return res.status(200).json({ success: false, message: messages.user.loginFailed, errors: errs });
+      return res.status(200).json({ success: false, message: messages.user.regsiterFailed, errors: errs });
     }
     const { email, password, nickname } = req.body;
     try {
       if ((await User.findOne({ email })))
-        return res.status(200).json({ success: false, message: messages.user.loginFailed, errors: [{
+        return res.status(200).json({ success: false, message: messages.user.regsiterFailed, errors: [{
           "message": messages.user.emailAlreadyInUse,
           "param": "email",
           "value": email
         }]});
       if ((await User.findOne({ nickname })))
-        return res.status(200).json({ success: false, message: messages.user.loginFailed, errors: [{
+        return res.status(200).json({ success: false, message: messages.user.regsiterFailed, errors: [{
           "message": messages.user.nicknameAlreadyInUse,
           "param": "nickname",
           "value": nickname
