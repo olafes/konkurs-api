@@ -28,6 +28,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./passport/index.js')(passport);
+app.use('/', require('./routes/index.js')(passport));
 app.use('/user', require('./routes/user.js')(passport));
+app.use('/challenge', require('./routes/challenge.js')(passport));
 
 module.exports = app.listen(config.port, () => console.log(`Server started on port ${config.port}...`));
