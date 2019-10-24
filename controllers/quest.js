@@ -6,7 +6,13 @@ const Quest = require('../models/Quest.js');
 module.exports = {
   getQuests: async (req, res, next) => {
     try {
-      const quests = await Quest.find();
+      const quests = [];
+      for (const quest of (await Quest.find())) {
+        quests.push({
+          description: quest.description,
+          points: quest.points
+        });
+      }
       res.status(200).json({
         success: true,
         quests: quests
@@ -16,13 +22,17 @@ module.exports = {
       return res.status(500).json({ success: false });
     }
   },
-  createQuest : async (req, res, next) => {
+  createQuests : async (req, res, next) => {
     try {
-      const { description, points } = req.body;
-      new Quest({
-        description,
-        points
-      }).save();
+      const { quests } = req.body;
+      if (Array.isArray(quests)) {
+        for (const quest of quests) {
+          await (new Quest({
+            description: quest.description,
+            points: quest.points
+          }).save());
+        }
+      }
       res.status(200).json({
         success: true
       });

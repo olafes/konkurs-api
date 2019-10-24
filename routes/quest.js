@@ -10,7 +10,9 @@ module.exports = passport => {
     next();
   }
 
+// console.log('controller', controller);
+
   router.get('/', controller.getQuests);
-  router.post('/', controller.createQuest);
+  router.post('/', controller.createQuests);
   return router;
 }
