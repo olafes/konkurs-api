@@ -1,7 +1,7 @@
 'use strict';
 const messages = require('../config/messages.js');
 const router = require('express').Router();
-const controller = require('../controllers/challenge.js');
+const controller = require('../controllers/quest.js');
 
 module.exports = passport => {
   const logged = (req, res, next) => {
@@ -10,7 +10,7 @@ module.exports = passport => {
     next();
   }
 
-  router.get('/', controller.getChallenges);
-  router.post('/', controller.createChallenge);
+  router.get('/', controller.getQuests);
+  router.post('/', controller.createQuest);
   return router;
 }
