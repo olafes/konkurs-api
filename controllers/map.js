@@ -45,5 +45,17 @@ module.exports = {
       console.log(err);
       return res.status(500).json({ success: false });
     }
+  },
+  deleteMarker : async (req, res, next) => {
+    try {
+      const { id } = req.body;
+      await Marker.deleteOne({ _id: id });
+      res.status(200).json({
+        success: true
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ success: false });
+    }
   }
 }

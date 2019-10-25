@@ -14,5 +14,6 @@ module.exports = passport => {
 
   router.get('/', controller.getMarkers);
   router.post('/', controller.createMarkers);
+  router.delete('/', controller.deleteMarker);
   return router;
 }
