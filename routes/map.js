@@ -12,8 +12,8 @@ module.exports = passport => {
 
 // console.log('controller', controller);
 
-  router.get('/', controller.getMarkers);
-  router.post('/', controller.createMarkers);
-  router.delete('/:id', controller.deleteMarker);
+  router.get('/', logged, controller.getMarkers);
+  router.post('/', logged, controller.createMarkers);
+  router.delete('/:id', logged, controller.deleteMarker);
   return router;
 }

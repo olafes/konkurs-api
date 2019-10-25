@@ -28,13 +28,14 @@ module.exports = {
   },
   createMarkers : async (req, res, next) => {
     try {
+      console.log(req.user.nickname);
       if (Array.isArray(req.body)) {
         for (const marker of req.body) {
           await (new Marker({
             type: marker.type,
             latitude: marker.latitude,
             longitude: marker.longitude,
-            addedBy: marker.addedBy
+            addedBy: req.user.nickname
           }).save());
         }
       }
