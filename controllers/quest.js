@@ -24,9 +24,8 @@ module.exports = {
   },
   createQuests : async (req, res, next) => {
     try {
-      const { quests } = req.body;
-      if (Array.isArray(quests)) {
-        for (const quest of quests) {
+      if (Array.isArray(req.body)) {
+        for (const quest of req.body) {
           await (new Quest({
             description: quest.description,
             points: quest.points

@@ -108,7 +108,8 @@ module.exports = {
                 sub: data.sub
               }
             },
-            email: data.email
+            email: data.email,
+            nickname: data.first_name
           });
           await user.save();
         }
