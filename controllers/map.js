@@ -48,8 +48,7 @@ module.exports = {
   },
   deleteMarker : async (req, res, next) => {
     try {
-      const { id } = req.body;
-      await Marker.deleteOne({ _id: id });
+      await Marker.deleteOne({ _id: req.params.id });
       res.status(200).json({
         success: true
       });
