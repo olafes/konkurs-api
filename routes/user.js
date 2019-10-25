@@ -41,7 +41,7 @@ module.exports = passport => {
     .withMessage(messages.user.passwordLength),
     check('nickname').isLength({ min: 3, max: 32})
     .withMessage(messages.user.nicknameLength)
-    .matches(/^[a-z0-9_-]+$/)
+    .matches(/^[a-zA-Z0-9_-]+$/)
     .withMessage(messages.user.nicknameFormat)
   ], controller.register);
   router.post('/logout', controller.logout);
