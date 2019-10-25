@@ -109,7 +109,7 @@ module.exports = {
               }
             },
             email: data.email,
-            nickname: data.first_name
+            nickname: data.email.split('@')[0]
           });
           await user.save();
         }
@@ -128,7 +128,6 @@ module.exports = {
     }
   },
   profile: async (req, res, next) => {
-    console.log('profile called', req.user);
     const user = req.user;
     res.status(200).json({
       success: true,

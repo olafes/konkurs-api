@@ -12,7 +12,7 @@ module.exports = passport => {
 
 // console.log('controller', controller);
 
-  router.get('/', controller.getQuests);
-  router.post('/', controller.createQuests);
+  router.get('/', logged, controller.getQuests);
+  router.post('/', logged, controller.createQuests);
   return router;
 }
